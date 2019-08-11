@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Kristoffer Karlsson</Authors>
+    <Company>Ternacode</Company>
+    <Product>Ternacode.Persistence</Product>
+    <Version>0.1.0</Version>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>EntityFrameworkCore, Entity Framework, Core, UnitOfWork, Repository, Testing</PackageTags>
+    <Description>Implementations of Ternacode.Persistence.Abstractions for EntityFramework Core.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.4" />
+    <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="2.2.0" />
+    <PackageReference Include="Ternacode.Persistence.Abstractions" Version="0.1.0" />
+  </ItemGroup>
+
+</Project>

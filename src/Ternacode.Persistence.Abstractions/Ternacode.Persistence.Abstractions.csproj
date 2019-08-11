@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Kristoffer Karlsson</Authors>
+    <Company>Ternacode</Company>
+    <Product>Ternacode.Persistence</Product>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>UnitOfWork, Repository, Testing</PackageTags>
+    <Version>0.1.0</Version>
+    <Description>Abstractions for Ternacode.Persistence.</Description>
+  </PropertyGroup>
+
+</Project>

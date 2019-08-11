@@ -1,0 +1,179 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Ternacode.Persistence.Abstractions;
+using Ternacode.Persistence.EntityFrameworkCore.Services.Interfaces;
+
+namespace Ternacode.Persistence.EntityFrameworkCore.Repositories
+{
+    internal class ContextRepository<TContext, TEntity> : IRepository<TEntity>
+        where TContext : DbContext
+        where TEntity : class
+    {
+        private readonly IContextService<TContext> _contextService;
+        private readonly IDbSetService<TContext, TEntity> _dbSetService;
+
+        public ContextRepository(
+            IContextService<TContext> contextService,
+            IDbSetService<TContext, TEntity> dbSetService)
+        {
+            _contextService = contextService;
+            _dbSetService = dbSetService;
+        }
+
+        public void Add(TEntity entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            var (context, hasOwnContext) = GetCurrentContext();
+            try
+            {
+                _dbSetService.GetDbSet(context)
+                    .Add(entity);
+
+                context.SaveChanges(); // TODO: Make configurable
+            }
+            finally
+            {
+                ClearOwnContext(hasOwnContext);
+            }
+        }
+
+        public async Task AddAsync(TEntity entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            var (context, hasOwnContext) = GetCurrentContext();
+            try
+            {
+                await _dbSetService.GetDbSet(context)
+                    .AddAsync(entity);
+
+                await context.SaveChangesAsync(); // TODO: Make configurable
+            }
+            finally
+            {
+                ClearOwnContext(hasOwnContext);
+            }
+        }
+
+        public TEntity Get(object id)
+        {
+            var (context, hasOwnContext) = GetCurrentContext();
+            try
+            {
+                return _dbSetService.GetDbSet(context)
+                    .Find(id);
+            }
+            finally
+            {
+                ClearOwnContext(hasOwnContext);
+            }
+        }
+
+        public TEntity Update(TEntity entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            var (context, hasOwnContext) = GetCurrentContext();
+            try
+            {
+                var updatedEntity = _dbSetService.GetDbSet(context)
+                    .Update(entity);
+
+                context.SaveChanges(); // TODO: Make configurable
+
+                return updatedEntity?.Entity;
+            }
+            finally
+            {
+                ClearOwnContext(hasOwnContext);
+            }
+        }
+
+        public void Delete(TEntity entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            var (context, hasOwnContext) = GetCurrentContext();
+            try
+            {
+                _dbSetService.GetDbSet(context)
+                    .Remove(entity);
+
+                context.SaveChanges(); // TODO: Make configurable
+            }
+            finally
+            {
+                ClearOwnContext(hasOwnContext);
+            }
+        }
+
+        public IEnumerable<TEntity> Query(IQuery<TEntity> query)
+        {
+            if (query == null)
+                throw new ArgumentNullException(nameof(query));
+
+            var (context, hasOwnContext) = GetCurrentContext();
+            try
+            {
+                var queryable = _dbSetService.GetDbSet(context)
+                    .AsQueryable();
+
+                var queryResult = query.Query(queryable);
+                queryResult = query.GetLoadedProperties()
+                    .Aggregate(queryResult, (current, property) => current.Include(property));
+
+                return queryResult.ToList();
+            }
+            finally
+            {
+                ClearOwnContext(hasOwnContext);
+            }
+        }
+
+        public int Count(IQuery<TEntity> query)
+        {
+            if (query == null)
+                throw new ArgumentNullException(nameof(query));
+
+            var (context, hasOwnContext) = GetCurrentContext();
+            try
+            {
+                var queryable = _dbSetService.GetDbSet(context)
+                    .AsQueryable();
+
+                return query.Query(queryable)
+                    .Count();
+            }
+            finally
+            {
+                ClearOwnContext(hasOwnContext);
+            }
+        }
+
+        private (TContext, bool) GetCurrentContext()
+        {
+            var hasOwnContext = false;
+            if (!_contextService.HasCurrentContext())
+            {
+                _contextService.InitContext();
+                hasOwnContext = true;
+            }
+
+            return (_contextService.GetCurrentContext(), hasOwnContext);
+        }
+
+        private void ClearOwnContext(bool hasOwnContext)
+        {
+            if (hasOwnContext)
+                _contextService.ClearCurrentContext();
+        }
+    }
+}
