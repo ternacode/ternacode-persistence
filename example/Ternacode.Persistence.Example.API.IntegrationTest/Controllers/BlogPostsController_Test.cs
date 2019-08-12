@@ -90,7 +90,7 @@ namespace Ternacode.Persistence.Example.API.IntegrationTest.Controllers
                 Assert.That(createBlogPostsResponse, Is.Not.Null, "Response is null");
                 Assert.That(createBlogPostsResponse.PostIds, Is.Not.Null, "Post ids result is null");
                 Assert.That(createBlogPostsResponse.PostIds.Count(), Is.EqualTo(1), "Invalid post ids count");
-                Assert.That(createBlogPostsResponse.PostIds.Single(), Is.Not.EqualTo(default));
+                Assert.That(createBlogPostsResponse.PostIds.Single(), Is.Not.EqualTo(default), "Post id has default value");
             });
         }
 

@@ -79,9 +79,9 @@ namespace Ternacode.Persistence.Example.Domain.UnitTest.Processes.BlogPosts
 
             Assert.Multiple(() =>
             {
-                Assert.That(result.Count, Is.EqualTo(2));
-                Assert.That(result.Contains(p2));
-                Assert.That(result.Contains(p3));
+                Assert.That(result.Count, Is.EqualTo(2), "Invalid result count");
+                Assert.That(result.Contains(p2), "Invalid result");
+                Assert.That(result.Contains(p3), "Invalid result");
             });
         }
 

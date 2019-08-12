@@ -52,7 +52,7 @@ namespace Ternacode.Persistence.Example.API.IntegrationTest.Controllers
                 Assert.That(httpResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK), "Invalid status code");
                 Assert.That(getUsersResponse?.Users, Is.Not.Null, "Null users returned");
 
-                CollectionAssert.AreEquivalent(expectedUsers, actualUsers);
+                CollectionAssert.AreEquivalent(expectedUsers, actualUsers, "Invalid users returned");
             });
         }
 
