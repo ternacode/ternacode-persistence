@@ -7,8 +7,9 @@
     <Product>Ternacode.Persistence</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>UnitOfWork, Repository, Testing</PackageTags>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <Description>Abstractions for Ternacode.Persistence.</Description>
+    <RepositoryUrl>https://github.com/ternacode/ternacode-persistence</RepositoryUrl>
   </PropertyGroup>
 
 </Project>
