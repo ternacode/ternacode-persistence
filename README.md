@@ -1,4 +1,5 @@
-﻿# Ternacode Persistence
+﻿# Ternacode Persistence [![Build status](https://ci.appveyor.com/api/projects/status/lg6vfsm1jt5k8fyo/branch/master?svg=true)](https://ci.appveyor.com/project/kristofferkarlsson/ternacode-persistence/branch/master)
+
 This project contains abstractions and an EntityFramework Core implementation for repository and unit of work patterns. The purpose is mainly to enable using EF Core while still maintaining a clean, testable architecture.
 
 ## Usage
