@@ -1,6 +1,11 @@
-﻿# Ternacode Persistence [![Build status](https://ci.appveyor.com/api/projects/status/lg6vfsm1jt5k8fyo/branch/master?svg=true)](https://ci.appveyor.com/project/kristofferkarlsson/ternacode-persistence/branch/master)
+﻿# Ternacode Persistence [![Build status](https://img.shields.io/appveyor/ci/kristofferkarlsson/ternacode-persistence/master?style=flat-square)](https://ci.appveyor.com/project/kristofferkarlsson/ternacode-persistence/branch/master)
 
 This project contains abstractions and an EntityFramework Core implementation for repository and unit of work patterns. The purpose is mainly to enable using EF Core while still maintaining a clean, testable architecture.
+
+Package                                     | Stable
+--------------------------------------------|-------------
+`Ternacode.Persistence.Abstractions`        | [![NuGet](https://img.shields.io/nuget/v/Ternacode.Persistence.Abstractions?style=flat-square)](https://www.nuget.org/packages/Ternacode.Persistence.Abstractions/)
+`Ternacode.Persistence.EntityFrameworkCore` | [![NuGet](https://img.shields.io/nuget/v/Ternacode.Persistence.EntityFrameworkCore?style=flat-square)](https://www.nuget.org/packages/Ternacode.Persistence.EntityFrameworkCore/)
 
 ## Usage
 The quickest way to get started is to look at the example project, containing a sample of how this library is used. In particular, the example contains a small ASP .NET Core API: ```Ternacode.Persistence.Example.API```. In ```Startup.ConfigureServices```, extension methods provided by the library are used to inject everything needed:
