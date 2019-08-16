@@ -2,13 +2,11 @@
 This project contains abstractions and an EntityFramework Core implementation for repository and unit of work patterns. The purpose is mainly to enable using EF Core while still maintaining a clean, testable architecture.
 
 ## Usage
-The quickest way to get started is to look at the example project, containing a sample of how this library is used. In particular, the example contains a small ASP .NET Core API: ```Ternacode.Persistence.Example.API```.
+The quickest way to get started is to look at the example project, containing a sample of how this library is used. In particular, the example contains a small ASP .NET Core API: ```Ternacode.Persistence.Example.API```. In ```Startup.ConfigureServices```, extension methods provided by the library are used to inject everything needed:
 
-In short, the example uses the ```IServiceCollection``` extension methods provided to inject everything needed:
+First, call ```AddPersistence``` on an ```IServiceCollection``` with a factory lambda returning the ```DbContext```. Optionally, a ```PersistenceOptions``` configuration can be provided. If no configuration is provided, then the transaction type will be ```TransactionScope``` and no context pool will be used.
 
-First, call ```AddPersistence``` with a factory lambda returning the ```DbContext```. Optionally, a ```PersistenceOptions``` configuration can be provided. If no configuration is provided, then the transaction type will be ```TransactionScope``` and no context pool will be used.
-
-Second, call ```AddEntity``` for each ```DbSet<TEntity>``` in your context that repositories should be made available for.
+Second, on the returned ```IPersistenceBuilder```, call ```AddEntity``` for each ```DbSet<TEntity>``` in your context that repositories should be made available for.
 
 ```csharp
 var options = new PersistenceOptions
