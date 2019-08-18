@@ -49,14 +49,33 @@ namespace Ternacode.Persistence.EntityFrameworkCore.Extensions
         {
             services.AddSingleton<IContextFactory<TContext>>(s => new ContextFactory<TContext>(contextFactory));
 
-            if (options == null || !options.UseContextPool)
+            if (options == null)
             {
-                return services.AddTransient<IContextService<TContext>, ContextService<TContext>>();
+                return services.AddTransient<IContextService<TContext>, ContextService<TContext>>()
+                               .AddTransient<IFlushService<TContext>, ContextFlushService<TContext>>();
             }
 
-            return services.AddSingleton<IPooledObjectPolicy<TContext>, ContextPolicy<TContext>>()
-                           .AddSingleton<IContextPool<TContext>, ContextPool<TContext>>()
-                           .AddTransient<IContextService<TContext>, PooledContextService<TContext>>();
+            if (options.UseContextPool)
+            {
+                services.AddSingleton<IPooledObjectPolicy<TContext>, ContextPolicy<TContext>>()
+                        .AddSingleton<IContextPool<TContext>, ContextPool<TContext>>()
+                        .AddTransient<IContextService<TContext>, PooledContextService<TContext>>();
+            }
+            else
+            {
+                services.AddTransient<IContextService<TContext>, ContextService<TContext>>();
+            }
+
+            if (options.UseManualRepositoryFlush)
+            {
+                services.AddTransient<IFlushService<TContext>, NoFlushService<TContext>>();
+            }
+            else
+            {
+                services.AddTransient<IFlushService<TContext>, ContextFlushService<TContext>>();
+            }
+
+            return services;
         }
 
         private static IServiceCollection AddUnitOfWork<TContext>(
