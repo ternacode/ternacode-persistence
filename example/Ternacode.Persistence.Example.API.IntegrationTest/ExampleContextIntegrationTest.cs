@@ -18,8 +18,11 @@ namespace Ternacode.Persistence.Example.API.IntegrationTest
         [SetUp]
         public void Up()
         {
-            CreateContext().Database.EnsureDeleted();
-            CreateContext().Database.EnsureCreated();
+            using (var context = CreateContext())
+            {
+                context.Database.EnsureDeleted();
+                context.Database.EnsureCreated();
+            }
 
             _clientFactory = new IntegrationTestWebApplicationFactory<Startup>();
         }
@@ -27,7 +30,10 @@ namespace Ternacode.Persistence.Example.API.IntegrationTest
         [TearDown]
         public void Down()
         {
-            CreateContext().Database.EnsureDeleted();
+            using (var context = CreateContext())
+            {
+                context.Database.EnsureDeleted();
+            }
         }
 
         protected HttpClient CreateClient()
