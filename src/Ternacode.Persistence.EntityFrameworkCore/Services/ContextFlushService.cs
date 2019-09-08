@@ -4,7 +4,7 @@ using Ternacode.Persistence.EntityFrameworkCore.Services.Interfaces;
 
 namespace Ternacode.Persistence.EntityFrameworkCore.Services
 {
-    public class ContextFlushService<TContext> : IFlushService<TContext>
+    public class ContextFlushService<TContext> : IContextFlushService<TContext>
         where TContext : DbContext
     {
         public void FlushChanges(TContext context)

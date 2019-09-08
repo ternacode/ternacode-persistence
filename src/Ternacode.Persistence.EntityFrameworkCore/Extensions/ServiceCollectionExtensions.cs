@@ -47,7 +47,8 @@ namespace Ternacode.Persistence.EntityFrameworkCore.Extensions
             Func<TContext> contextFactory)
             where TContext : DbContext
         {
-            services.AddSingleton<IContextFactory<TContext>>(s => new ContextFactory<TContext>(contextFactory));
+            services.AddSingleton<IContextFactory<TContext>>(s => new ContextFactory<TContext>(contextFactory))
+                    .AddTransient<IContextFlushService<TContext>, ContextFlushService<TContext>>();
 
             if (options == null)
             {

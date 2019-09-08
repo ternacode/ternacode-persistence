@@ -7,8 +7,10 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitOfWork
     internal class DbContextTransactionUnitOfWork<TContext> : BaseDbContextUnitOfWork<TContext, IDbContextTransaction>
         where TContext : DbContext
     {
-        public DbContextTransactionUnitOfWork(IContextService<TContext> contextService)
-            : base(contextService)
+        public DbContextTransactionUnitOfWork(
+            IContextService<TContext> contextService,
+            IContextFlushService<TContext> contextFlushService)
+            : base(contextService, contextFlushService)
         {
         }
 
