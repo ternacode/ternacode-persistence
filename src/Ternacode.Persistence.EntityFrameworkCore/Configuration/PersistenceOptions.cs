@@ -15,10 +15,9 @@ namespace Ternacode.Persistence.EntityFrameworkCore.Configuration
         public bool UseContextPool { get; set; }
 
         /// <summary>
-        /// Specifies if a flush to the database should only be done manually for repositories.
         /// If false, changes will be flushed to the database on each IRepository call that writes data.
-        /// NOTE: A successful IUnitOfWork method call will still commit changes to the database independently of this value.
+        /// A successful IUnitOfWork method call will still flush and commit changes to the database independently of this value.
         /// </summary>
-        public bool UseManualRepositoryFlush { get; set; }
+        public bool DisableAutomaticRepositoryFlush { get; set; }
     }
 }

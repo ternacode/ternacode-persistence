@@ -14,23 +14,23 @@ namespace Ternacode.Persistence.EntityFrameworkCore.ComponentTest.UnitOfWork
     {
         [TestFixture(false)]
         [TestFixture(true)]
-        public class When_setting_manual_flush : BaseComponentTest
+        public class When_setting_disable_automatic_flush : BaseComponentTest
         {
-            private readonly bool _useManualFlush;
+            private readonly bool _disableAutomaticFlush;
 
-            public When_setting_manual_flush(bool useManualFlush)
+            public When_setting_disable_automatic_flush(bool disableAutomaticFlush)
             {
-                _useManualFlush = useManualFlush;
+                _disableAutomaticFlush = disableAutomaticFlush;
             }
 
             protected override PersistenceOptions GetPersistenceOptions()
                 => new PersistenceOptions
                 {
-                    UseManualRepositoryFlush = _useManualFlush
+                    DisableAutomaticRepositoryFlush = _disableAutomaticFlush
                 };
 
             protected override ComponentTestContext CreateContext()
-                => ContextFactory.CreateContextWithMSSQLDb(nameof(When_setting_manual_flush));
+                => ContextFactory.CreateContextWithMSSQLDb(nameof(When_setting_disable_automatic_flush));
 
             [Test]
             public void Then_the_expected_entities_are_added()
@@ -48,6 +48,7 @@ namespace Ternacode.Persistence.EntityFrameworkCore.ComponentTest.UnitOfWork
                 var foos = _serviceProvider.GetService<IRepository<Foo>>().Query(new GetWithoutLoadingQuery<Foo>());
                 var bars = _serviceProvider.GetService<IRepository<Bar>>().Query(new GetWithoutLoadingQuery<Bar>());
 
+                // When using a unit of work, changes should be flushed and commited regardless of DisableAutomaticRepositoryFlush
                 Assert.Multiple(() =>
                 {
                     Assert.That(foos.Count(), Is.EqualTo(1), "Invalid foo count");

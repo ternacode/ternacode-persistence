@@ -67,7 +67,7 @@ namespace Ternacode.Persistence.EntityFrameworkCore.Extensions
                 services.AddTransient<IContextService<TContext>, ContextService<TContext>>();
             }
 
-            if (options.UseManualRepositoryFlush)
+            if (options.DisableAutomaticRepositoryFlush)
             {
                 services.AddTransient<IFlushService<TContext>, NoFlushService<TContext>>();
             }
