@@ -70,6 +70,7 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitTest.Repositories
 
             private IContextService<DbContext_Fake> _contextService;
             private IDbSetService<DbContext_Fake, Foo> _dbSetService;
+            private IFlushService<DbContext_Fake> _flushService;
 
             private Foo _foo;
             private DbContext_Fake _context;
@@ -89,6 +90,7 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitTest.Repositories
 
                 _contextService = _fixture.Freeze<IContextService<DbContext_Fake>>();
                 _dbSetService = _fixture.Freeze<IDbSetService<DbContext_Fake, Foo>>();
+                _flushService = _fixture.Freeze<IFlushService<DbContext_Fake>>();
 
                 _context = new DbContext_Fake();
 
@@ -116,7 +118,7 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitTest.Repositories
                     _contextService.Received(_expectedContextManageCount).InitContext();
                     _contextService.Received(_expectedContextManageCount).ClearCurrentContext();
                     _dbSet.Received(1).Add(_foo);
-                    Assert.That(_context.GetCallCount(nameof(DbContext.SaveChanges)), Is.EqualTo(1), "Invalid SaveChanges call count");
+                    _flushService.Received(1).FlushChanges(_context);
                 });
             }
         }
@@ -134,6 +136,7 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitTest.Repositories
 
             private IContextService<DbContext_Fake> _contextService;
             private IDbSetService<DbContext_Fake, Foo> _dbSetService;
+            private IFlushService<DbContext_Fake> _flushService;
 
             private Foo _foo;
             private DbContext_Fake _context;
@@ -153,6 +156,7 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitTest.Repositories
 
                 _contextService = _fixture.Freeze<IContextService<DbContext_Fake>>();
                 _dbSetService = _fixture.Freeze<IDbSetService<DbContext_Fake, Foo>>();
+                _flushService = _fixture.Freeze<IFlushService<DbContext_Fake>>();
 
                 _context = new DbContext_Fake();
 
@@ -180,7 +184,7 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitTest.Repositories
                     _contextService.Received(_expectedContextManageCount).InitContext();
                     _contextService.Received(_expectedContextManageCount).ClearCurrentContext();
                     _dbSet.Received(1).AddAsync(_foo);
-                    Assert.That(_context.GetCallCount(nameof(DbContext.SaveChangesAsync)), Is.EqualTo(1), "Invalid SaveChangesAsync call count");
+                    _flushService.Received(1).FlushChangesAsync(_context);
                 });
             }
         }
@@ -265,6 +269,7 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitTest.Repositories
 
             private IContextService<DbContext_Fake> _contextService;
             private IDbSetService<DbContext_Fake, Foo> _dbSetService;
+            private IFlushService<DbContext_Fake> _flushService;
 
             private Foo _foo;
             private DbContext_Fake _context;
@@ -284,6 +289,7 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitTest.Repositories
 
                 _contextService = _fixture.Freeze<IContextService<DbContext_Fake>>();
                 _dbSetService = _fixture.Freeze<IDbSetService<DbContext_Fake, Foo>>();
+                _flushService = _fixture.Freeze<IFlushService<DbContext_Fake>>();
 
                 _context = new DbContext_Fake();
 
@@ -311,7 +317,7 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitTest.Repositories
                     _contextService.Received(_expectedContextManageCount).InitContext();
                     _contextService.Received(_expectedContextManageCount).ClearCurrentContext();
                     _dbSet.Received(1).Update(_foo);
-                    Assert.That(_context.GetCallCount(nameof(DbContext.SaveChanges)), Is.EqualTo(1), "Invalid SaveChanges call count");
+                    _flushService.Received(1).FlushChanges(_context);
                 });
             }
         }
@@ -329,6 +335,7 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitTest.Repositories
 
             private IContextService<DbContext_Fake> _contextService;
             private IDbSetService<DbContext_Fake, Foo> _dbSetService;
+            private IFlushService<DbContext_Fake> _flushService;
 
             private Foo _foo;
             private DbContext_Fake _context;
@@ -348,6 +355,7 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitTest.Repositories
 
                 _contextService = _fixture.Freeze<IContextService<DbContext_Fake>>();
                 _dbSetService = _fixture.Freeze<IDbSetService<DbContext_Fake, Foo>>();
+                _flushService = _fixture.Freeze<IFlushService<DbContext_Fake>>();
 
                 _context = new DbContext_Fake();
 
@@ -375,7 +383,7 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitTest.Repositories
                     _contextService.Received(_expectedContextManageCount).InitContext();
                     _contextService.Received(_expectedContextManageCount).ClearCurrentContext();
                     _dbSet.Received(1).Remove(_foo);
-                    Assert.That(_context.GetCallCount(nameof(DbContext.SaveChanges)), Is.EqualTo(1), "Invalid SaveChanges call count");
+                    _flushService.Received(1).FlushChanges(_context);
                 });
             }
         }

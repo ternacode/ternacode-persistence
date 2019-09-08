@@ -14,13 +14,16 @@ namespace Ternacode.Persistence.EntityFrameworkCore.Repositories
     {
         private readonly IContextService<TContext> _contextService;
         private readonly IDbSetService<TContext, TEntity> _dbSetService;
+        private readonly IFlushService<TContext> _flushService;
 
         public ContextRepository(
             IContextService<TContext> contextService,
-            IDbSetService<TContext, TEntity> dbSetService)
+            IDbSetService<TContext, TEntity> dbSetService,
+            IFlushService<TContext> flushService)
         {
             _contextService = contextService;
             _dbSetService = dbSetService;
+            _flushService = flushService;
         }
 
         public void Add(TEntity entity)
@@ -34,7 +37,7 @@ namespace Ternacode.Persistence.EntityFrameworkCore.Repositories
                 _dbSetService.GetDbSet(context)
                     .Add(entity);
 
-                context.SaveChanges(); // TODO: Make configurable
+                _flushService.FlushChanges(context);
             }
             finally
             {
@@ -53,7 +56,7 @@ namespace Ternacode.Persistence.EntityFrameworkCore.Repositories
                 await _dbSetService.GetDbSet(context)
                     .AddAsync(entity);
 
-                await context.SaveChangesAsync(); // TODO: Make configurable
+                await _flushService.FlushChangesAsync(context);
             }
             finally
             {
@@ -86,7 +89,7 @@ namespace Ternacode.Persistence.EntityFrameworkCore.Repositories
                 var updatedEntity = _dbSetService.GetDbSet(context)
                     .Update(entity);
 
-                context.SaveChanges(); // TODO: Make configurable
+                _flushService.FlushChanges(context);
 
                 return updatedEntity?.Entity;
             }
@@ -107,7 +110,7 @@ namespace Ternacode.Persistence.EntityFrameworkCore.Repositories
                 _dbSetService.GetDbSet(context)
                     .Remove(entity);
 
-                context.SaveChanges(); // TODO: Make configurable
+                _flushService.FlushChanges(context);
             }
             finally
             {

@@ -12,10 +12,14 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitOfWork
         where TTransaction : IDisposable
     {
         protected readonly IContextService<TContext> _contextService;
+        private readonly IContextFlushService<TContext> _contextFlushService;
 
-        protected BaseDbContextUnitOfWork(IContextService<TContext> contextService)
+        protected BaseDbContextUnitOfWork(
+            IContextService<TContext> contextService,
+            IContextFlushService<TContext> contextFlushService)
         {
             _contextService = contextService;
+            _contextFlushService = contextFlushService;
         }
 
         protected abstract TTransaction BeginTransaction();
@@ -32,6 +36,8 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitOfWork
                 using (var transaction = BeginTransaction())
                 {
                     action();
+
+                    _contextFlushService.FlushChanges(_contextService.GetCurrentContext());
                     CommitTransaction(transaction);
                 }
             }
@@ -56,6 +62,7 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitOfWork
                         task.Wait();
                     }
 
+                    _contextFlushService.FlushChanges(_contextService.GetCurrentContext());
                     CommitTransaction(transaction);
 
                     return result;
@@ -77,6 +84,8 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitOfWork
                 using (var transaction = BeginTransaction())
                 {
                     await funcAsync();
+
+                    await _contextFlushService.FlushChangesAsync(_contextService.GetCurrentContext());
                     CommitTransaction(transaction);
                 }
             }
@@ -96,6 +105,8 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitOfWork
                 using (var transaction = BeginTransaction())
                 {
                     var result = await funcAsync();
+
+                    await _contextFlushService.FlushChangesAsync(_contextService.GetCurrentContext());
                     CommitTransaction(transaction);
 
                     return result;

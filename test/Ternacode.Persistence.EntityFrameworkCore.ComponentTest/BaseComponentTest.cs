@@ -27,14 +27,20 @@ namespace Ternacode.Persistence.EntityFrameworkCore.ComponentTest
 
             _serviceProvider = services.BuildServiceProvider();
 
-            CreateContext().Database.EnsureDeleted();
-            CreateContext().Database.EnsureCreated();
+            using (var context = CreateContext())
+            {
+                context.Database.EnsureDeleted();
+                context.Database.EnsureCreated();
+            }
         }
 
         [TearDown]
         public void TearDown()
         {
-            CreateContext().Database.EnsureDeleted();
+            using (var context = CreateContext())
+            {
+                context.Database.EnsureDeleted();
+            }
         }
 
         protected virtual PersistenceOptions GetPersistenceOptions()

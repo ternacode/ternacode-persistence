@@ -24,6 +24,10 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitTest.UnitOfWork
 
         private IContextService<DbContext_Fake> _contextService;
 
+        private IContextFlushService<DbContext_Fake> _contextFlushService;
+
+        private DbContext_Fake _context;
+
         public UnitOfWork_Test(TransactionType transactionType)
         {
             _transactionType = transactionType;
@@ -34,12 +38,14 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitTest.UnitOfWork
         {
             _fixture = new CustomAutoFixture();
 
-            var context = new DbContext_Fake();
+            _context = new DbContext_Fake();
 
             _contextService = _fixture.Freeze<IContextService<DbContext_Fake>>();
             _contextService.HasCurrentContext().Returns(false);
-            _contextService.InitContext().Returns(context);
-            _contextService.GetCurrentContext().Returns(context);
+            _contextService.InitContext().Returns(_context);
+            _contextService.GetCurrentContext().Returns(_context);
+
+            _contextFlushService = _fixture.Freeze<IContextFlushService<DbContext_Fake>>();
 
             _sut = CreateSut(_transactionType);
         }
@@ -77,39 +83,47 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitTest.UnitOfWork
         }
 
         [Test]
-        public void When_calling_run_action_Then_context_service_methods_are_called_once_each()
+        public void When_calling_run_action_Then_expected_service_methods_are_called_once_each()
         {
             _sut.Run(() => { });
 
             _contextService.Received(1).InitContext();
             _contextService.Received(1).ClearCurrentContext();
+            _contextFlushService.Received(1).FlushChanges(Arg.Any<DbContext_Fake>());
+            _contextFlushService.Received().FlushChanges(_context);
         }
 
         [Test]
-        public void When_calling_run_func_Then_context_service_methods_are_called_once_each()
+        public void When_calling_run_func_Then_expected_service_methods_are_called_once_each()
         {
             _sut.Run(() => string.Empty);
 
             _contextService.Received(1).InitContext();
             _contextService.Received(1).ClearCurrentContext();
+            _contextFlushService.Received(1).FlushChanges(Arg.Any<DbContext_Fake>());
+            _contextFlushService.Received().FlushChanges(_context);
         }
 
         [Test]
-        public async Task When_calling_run_async_action_Then_context_service_methods_are_called_once_each()
+        public async Task When_calling_run_async_action_Then_expected_service_methods_are_called_once_each()
         {
             await _sut.RunAsync(() => Task.CompletedTask);
 
             _contextService.Received(1).InitContext();
             _contextService.Received(1).ClearCurrentContext();
+            await _contextFlushService.Received(1).FlushChangesAsync(Arg.Any<DbContext_Fake>());
+            await _contextFlushService.Received().FlushChangesAsync(_context);
         }
 
         [Test]
-        public async Task When_calling_run_async_func_Then_context_service_methods_are_called_once_each()
+        public async Task When_calling_run_async_func_Then_expected_service_methods_are_called_once_each()
         {
             await _sut.RunAsync(() => Task.FromResult(string.Empty));
 
             _contextService.Received(1).InitContext();
             _contextService.Received(1).ClearCurrentContext();
+            await _contextFlushService.Received(1).FlushChangesAsync(Arg.Any<DbContext_Fake>());
+            await _contextFlushService.Received().FlushChangesAsync(_context);
         }
 
         [Test]
