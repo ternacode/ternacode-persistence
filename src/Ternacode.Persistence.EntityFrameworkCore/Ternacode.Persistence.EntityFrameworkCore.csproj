@@ -5,7 +5,7 @@
     <Authors>Kristoffer Karlsson</Authors>
     <Company>Ternacode</Company>
     <Product>Ternacode.Persistence</Product>
-    <Version>0.2.0</Version>
+    <Version>0.3.0</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>EntityFrameworkCore, Entity Framework, Core, UnitOfWork, Repository, Testing</PackageTags>
     <Description>Implementations of Ternacode.Persistence.Abstractions for EntityFramework Core.</Description>
