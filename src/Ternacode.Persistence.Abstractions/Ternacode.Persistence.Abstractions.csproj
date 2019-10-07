@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <Authors>Kristoffer Karlsson</Authors>
     <Company>Ternacode</Company>
     <Product>Ternacode.Persistence</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>UnitOfWork, Repository, Testing</PackageTags>
-    <Version>0.1.3</Version>
+    <Version>0.3.0</Version>
     <Description>Abstractions for repository and unit of work patterns.</Description>
     <RepositoryUrl>https://github.com/ternacode/ternacode-persistence</RepositoryUrl>
     <Copyright>Ternacode</Copyright>
