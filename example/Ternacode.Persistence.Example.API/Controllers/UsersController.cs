@@ -8,7 +8,7 @@ using Ternacode.Persistence.Example.Domain.Processes.Users.Interfaces;
 namespace Ternacode.Persistence.Example.API.Controllers
 {
     [Route("api/users")]
-    public class UsersController : Controller
+    public class UsersController : ControllerBase
     {
         private readonly IUsersProcess _usersProcess;
 

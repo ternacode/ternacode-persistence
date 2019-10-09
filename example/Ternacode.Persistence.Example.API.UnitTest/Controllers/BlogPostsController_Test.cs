@@ -45,21 +45,20 @@ namespace Ternacode.Persistence.Example.API.UnitTest.Controllers
             var process = _fixture.Freeze<IBlogPostsProcess>();
             process.GetPosts(Arg.Is(authorName)).Returns(posts);
 
-            using (var sut = _fixture.CreateController<BlogPostsController>())
+            var sut = _fixture.CreateController<BlogPostsController>();
+            
+            var actionResult = sut.Get(authorName);
+            var okObjectResult = actionResult?.Result as OkObjectResult;
+            var response = okObjectResult?.Value as GetBlogPostsResponse;
+
+            var actualPosts = response?.Posts?.Select(p => (p.PostId, p.Title));
+
+            Assert.Multiple(() =>
             {
-                var actionResult = sut.Get(authorName);
-                var okObjectResult = actionResult?.Result as OkObjectResult;
-                var response = okObjectResult?.Value as GetBlogPostsResponse;
-
-                var actualPosts = response?.Posts?.Select(p => (p.PostId, p.Title));
-
-                Assert.Multiple(() =>
-                {
-                    Assert.That(okObjectResult, Is.Not.Null, "OkObjectResult is null");
-                    Assert.That(response, Is.Not.Null, "Response is null");
-                    CollectionAssert.AreEquivalent(expectedPosts, actualPosts, "Invalid posts returned");
-                });
-            }
+                Assert.That(okObjectResult, Is.Not.Null, "OkObjectResult is null");
+                Assert.That(response, Is.Not.Null, "Response is null");
+                CollectionAssert.AreEquivalent(expectedPosts, actualPosts, "Invalid posts returned");
+            });
         }
 
         [Test]
@@ -67,14 +66,13 @@ namespace Ternacode.Persistence.Example.API.UnitTest.Controllers
         {
             var process = _fixture.Freeze<IBlogPostsProcess>();
 
-            using (var sut = _fixture.CreateController<BlogPostsController>())
-            {
-                var authorName = _fixture.Create<string>();
-                sut.Get(authorName);
+            var sut = _fixture.CreateController<BlogPostsController>();
+            
+            var authorName = _fixture.Create<string>();
+            sut.Get(authorName);
 
-                process.Received(1).GetPosts(Arg.Any<string>());
-                process.Received().GetPosts(Arg.Is(authorName));
-            }
+            process.Received(1).GetPosts(Arg.Any<string>());
+            process.Received().GetPosts(Arg.Is(authorName));
         }
 
         [Test]
@@ -87,23 +85,21 @@ namespace Ternacode.Persistence.Example.API.UnitTest.Controllers
             process.CreatePostsAsync(Arg.Any<IEnumerable<CreatePostDto>>())
                 .Returns(posts);
 
-            using (var sut = _fixture.CreateController<BlogPostsController>())
+            var sut = _fixture.CreateController<BlogPostsController>();
+            var request = _fixture.Create<CreateBlogPostsRequest>();
+
+            var actionResult = await sut.PostAsync(request);
+            var okObjectResult = actionResult?.Result as OkObjectResult;
+            var response = okObjectResult?.Value as CreateBlogPostsResponse;
+
+            var actualIds = response?.PostIds;
+
+            Assert.Multiple(() =>
             {
-                var request = _fixture.Create<CreateBlogPostsRequest>();
-
-                var actionResult = await sut.PostAsync(request);
-                var okObjectResult = actionResult?.Result as OkObjectResult;
-                var response = okObjectResult?.Value as CreateBlogPostsResponse;
-
-                var actualIds = response?.PostIds;
-
-                Assert.Multiple(() =>
-                {
-                    Assert.That(okObjectResult, Is.Not.Null, "OkObjectResult is null");
-                    Assert.That(response, Is.Not.Null, "Response is null");
-                    CollectionAssert.AreEquivalent(expectedIds, actualIds, "Invalid ids returned");
-                });
-            }
+                Assert.That(okObjectResult, Is.Not.Null, "OkObjectResult is null");
+                Assert.That(response, Is.Not.Null, "Response is null");
+                CollectionAssert.AreEquivalent(expectedIds, actualIds, "Invalid ids returned");
+            });
         }
 
         [Test]
@@ -111,12 +107,11 @@ namespace Ternacode.Persistence.Example.API.UnitTest.Controllers
         {
             var process = _fixture.Freeze<IBlogPostsProcess>();
 
-            using (var sut = _fixture.CreateController<BlogPostsController>())
-            {
-                await sut.PostAsync(_fixture.Create<CreateBlogPostsRequest>());
+            var sut = _fixture.CreateController<BlogPostsController>();
+            
+            await sut.PostAsync(_fixture.Create<CreateBlogPostsRequest>());
 
-                await process.Received(1).CreatePostsAsync(Arg.Any<IEnumerable<CreatePostDto>>());
-            }
+            await process.Received(1).CreatePostsAsync(Arg.Any<IEnumerable<CreatePostDto>>());
         }
     }
 }

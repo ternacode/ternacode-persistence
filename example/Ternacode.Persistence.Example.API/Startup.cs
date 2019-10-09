@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Swashbuckle.AspNetCore.Swagger;
 using Ternacode.Persistence.EntityFrameworkCore.Extensions;
 using Ternacode.Persistence.Example.API.Contracts.Errors;
 using Ternacode.Persistence.Example.Database;
@@ -48,11 +48,11 @@ namespace Ternacode.Persistence.Example.API
             services.AddTransient<IBlogPostsProcess, BlogPostsProcess>()
                     .AddTransient<IUsersProcess, UsersProcess>();
 
-            services.AddMvc();
+            services.AddMvc(o => o.EnableEndpointRouting = false);
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info
+                c.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Version = "v1",
                     Title = "Ternacode.Persistence Example API",
@@ -61,7 +61,7 @@ namespace Ternacode.Persistence.Example.API
             });
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             // Add a simple exception handler
             app.UseExceptionHandler(builder =>

@@ -9,7 +9,7 @@ using Ternacode.Persistence.Example.Domain.Processes.BlogPosts.Interfaces;
 namespace Ternacode.Persistence.Example.API.Controllers
 {
     [Route("api/posts")]
-    public class BlogPostsController : Controller
+    public class BlogPostsController : ControllerBase
     {
         private readonly IBlogPostsProcess _blogPostsProcess;
 

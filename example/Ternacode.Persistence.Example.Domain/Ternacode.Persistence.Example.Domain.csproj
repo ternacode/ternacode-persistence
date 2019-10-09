@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Ternacode.Persistence.Abstractions" Version="0.1.3" />
+    <PackageReference Include="Ternacode.Persistence.Abstractions" Version="0.3.0" />
   </ItemGroup>
 
 </Project>

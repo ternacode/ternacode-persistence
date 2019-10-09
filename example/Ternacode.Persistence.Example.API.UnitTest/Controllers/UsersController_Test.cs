@@ -42,34 +42,30 @@ namespace Ternacode.Persistence.Example.API.UnitTest.Controllers
             var process = _fixture.Freeze<IUsersProcess>();
             process.GetUsers().Returns(users);
 
-            using (var sut = _fixture.CreateController<UsersController>())
+            var sut = _fixture.CreateController<UsersController>();
+            var actionResult = sut.Get();
+            var okObjectResult = actionResult?.Result as OkObjectResult;
+            var response = okObjectResult?.Value as GetUsersResponse;
+
+            var actualUsers = response?.Users?.Select(u => (u.UserId, u.Name));
+
+            Assert.Multiple(() =>
             {
-                var actionResult = sut.Get();
-                var okObjectResult = actionResult?.Result as OkObjectResult;
-                var response = okObjectResult?.Value as GetUsersResponse;
-
-                var actualUsers = response?.Users?.Select(u => (u.UserId, u.Name));
-
-                Assert.Multiple(() =>
-                {
-                    Assert.That(okObjectResult, Is.Not.Null, "OkObjectResult result is null");
-                    Assert.That(response, Is.Not.Null, "Response is null");
-                    CollectionAssert.AreEquivalent(expectedUsers, actualUsers, "Invalid user data returned");
-                });
-            }
+                Assert.That(okObjectResult, Is.Not.Null, "OkObjectResult result is null");
+                Assert.That(response, Is.Not.Null, "Response is null");
+                CollectionAssert.AreEquivalent(expectedUsers, actualUsers, "Invalid user data returned");
+            });
         }
 
         [Test]
         public void When_getting_users_Then_the_process_get_users_is_called_once()
         {
             var process = _fixture.Freeze<IUsersProcess>();
-            
-            using (var sut = _fixture.CreateController<UsersController>())
-            {
-                sut.Get();
 
-                process.Received(1).GetUsers();
-            }
+            var sut = _fixture.CreateController<UsersController>();
+            sut.Get();
+
+            process.Received(1).GetUsers();
         }
 
         [Test]
@@ -80,22 +76,21 @@ namespace Ternacode.Persistence.Example.API.UnitTest.Controllers
             var process = _fixture.Freeze<IUsersProcess>();
             process.CreateUserAsync(Arg.Any<string>()).Returns(user);
 
-            using (var sut = _fixture.CreateController<UsersController>())
+            var sut = _fixture.CreateController<UsersController>();
+            
+            var request = _fixture.Create<CreateUserRequest>();
+            request.Name = user.Name;
+
+            var actionResult = await sut.PostAsync(request);
+            var okObjectResult = actionResult?.Result as OkObjectResult;
+            var response = okObjectResult?.Value as CreateUserResponse;
+
+            Assert.Multiple(() =>
             {
-                var request = _fixture.Create<CreateUserRequest>();
-                request.Name = user.Name;
-
-                var actionResult = await sut.PostAsync(request);
-                var okObjectResult = actionResult?.Result as OkObjectResult;
-                var response = okObjectResult?.Value as CreateUserResponse;
-
-                Assert.Multiple(() =>
-                {
-                    Assert.That(okObjectResult, Is.Not.Null, "OkObjectResult result is null");
-                    Assert.That(response, Is.Not.Null, "Response is null");
-                    Assert.That(response.UserId, Is.EqualTo(user.UserId), "Invalid user id returned");
-                });
-            }
+                Assert.That(okObjectResult, Is.Not.Null, "OkObjectResult result is null");
+                Assert.That(response, Is.Not.Null, "Response is null");
+                Assert.That(response.UserId, Is.EqualTo(user.UserId), "Invalid user id returned");
+            });
         }
 
         [Test]
@@ -105,14 +100,13 @@ namespace Ternacode.Persistence.Example.API.UnitTest.Controllers
             process.CreateUserAsync(Arg.Any<string>())
                 .Returns(_fixture.Create<User>());
 
-            using (var sut = _fixture.CreateController<UsersController>())
-            {
-                var request = _fixture.Create<CreateUserRequest>();
-                await sut.PostAsync(request);
+            var sut = _fixture.CreateController<UsersController>();
+            
+            var request = _fixture.Create<CreateUserRequest>();
+            await sut.PostAsync(request);
 
-                await process.Received(1).CreateUserAsync(Arg.Any<string>());
-                await process.Received().CreateUserAsync(Arg.Is(request.Name));
-            }
+            await process.Received(1).CreateUserAsync(Arg.Any<string>());
+            await process.Received().CreateUserAsync(Arg.Is(request.Name));
         }
     }
 }
