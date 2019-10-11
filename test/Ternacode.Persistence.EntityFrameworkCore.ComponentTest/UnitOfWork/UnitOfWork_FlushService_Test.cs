@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using Ternacode.Persistence.Abstractions;
@@ -7,25 +8,36 @@ using Ternacode.Persistence.EntityFrameworkCore.ComponentTest.Factories;
 using Ternacode.Persistence.EntityFrameworkCore.ComponentTest.Model;
 using Ternacode.Persistence.EntityFrameworkCore.ComponentTest.Queries;
 using Ternacode.Persistence.EntityFrameworkCore.Configuration;
+using Ternacode.Persistence.EntityFrameworkCore.Enums;
 
 namespace Ternacode.Persistence.EntityFrameworkCore.ComponentTest.UnitOfWork
 {
     public class UnitOfWork_FlushService_Test
     {
-        [TestFixture(false)]
-        [TestFixture(true)]
+        [TestFixtureSource(nameof(TestConfigurations))]
         public class When_setting_disable_automatic_flush : BaseComponentTest
         {
+            public static IEnumerable<object> TestConfigurations = new[]
+            {
+                new object[] { TransactionType.DbContextTransaction, false },
+                new object[] { TransactionType.DbContextTransaction, true },
+                new object[] { TransactionType.TransactionScope, false },
+                new object[] { TransactionType.TransactionScope, true }
+            };
+
+            private readonly TransactionType _transactionType;
             private readonly bool _disableAutomaticFlush;
 
-            public When_setting_disable_automatic_flush(bool disableAutomaticFlush)
+            public When_setting_disable_automatic_flush(TransactionType transactionType, bool disableAutomaticFlush)
             {
+                _transactionType = transactionType;
                 _disableAutomaticFlush = disableAutomaticFlush;
             }
 
             protected override PersistenceOptions GetPersistenceOptions()
                 => new PersistenceOptions
                 {
+                    UnitOfWorkTransactionType = _transactionType,
                     DisableAutomaticRepositoryFlush = _disableAutomaticFlush
                 };
 
