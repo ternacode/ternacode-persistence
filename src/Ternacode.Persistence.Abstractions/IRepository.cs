@@ -39,8 +39,14 @@ namespace Ternacode.Persistence.Abstractions
 
 
         /// <summary>
-        /// Gets the database TEntity count using the query of provided IQuery object.
+        /// Gets the database entity count using the query of provided query.
         /// </summary>
         int Count(IQuery<TEntity> query);
+
+
+        /// <summary>
+        /// Returns whether there is at least one entity matching the provided query.
+        /// </summary>
+        bool Any(IQuery<TEntity> query);
     }
 }
