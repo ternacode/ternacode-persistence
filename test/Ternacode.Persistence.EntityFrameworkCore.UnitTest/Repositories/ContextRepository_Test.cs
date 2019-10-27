@@ -52,6 +52,12 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitTest.Repositories
         }
 
         [Test]
+        public void When_calling_any_for_a_null_query_Then_an_exception_is_thrown()
+        {
+            Assert.That(() => _sut.Any(null), Throws.ArgumentNullException);
+        }
+
+        [Test]
         public void When_calling_query_for_a_null_query_Then_an_exception_is_thrown()
         {
             Assert.That(() => _sut.Query(null), Throws.ArgumentNullException);
@@ -407,8 +413,6 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitTest.Repositories
             private IEnumerable<Foo> _foos;
             private IQuery<Foo> _query;
 
-            private int _result;
-
             public When_counting_entities(bool hasCurrentContext)
             {
                 _hasCurrentContext = hasCurrentContext;
@@ -447,14 +451,89 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitTest.Repositories
             [Test]
             public void Then_expected_methods_are_called_the_correct_times()
             {
-                _result = _sut.Count(_query);
+                var result = _sut.Count(_query);
 
                 Assert.Multiple(() =>
                 {
                     _contextService.Received(_expectedContextManageCount).InitContext();
                     _contextService.Received(_expectedContextManageCount).ClearCurrentContext();
-                    Assert.That(_result, Is.EqualTo(_foos.Count()), "Invalid result count");
+                    Assert.That(result, Is.EqualTo(_foos.Count()), "Invalid result count");
                 });
+            }
+        }
+
+        [TestFixture(false)]
+        [TestFixture(true)]
+        public class When_checking_for_any_entities
+        {
+            private CustomAutoFixture _fixture;
+
+            private readonly bool _hasCurrentContext;
+            private int _expectedContextManageCount;
+
+            private ContextRepository<DbContext_Fake, Foo> _sut;
+
+            private IContextService<DbContext_Fake> _contextService;
+            private IDbSetService<DbContext_Fake, Foo> _dbSetService;
+
+            private DbContext_Fake _context;
+            private DbSet<Foo> _dbSet;
+            private IEnumerable<Foo> _foos;
+            private IQuery<Foo> _query;
+
+            public When_checking_for_any_entities(bool hasCurrentContext)
+            {
+                _hasCurrentContext = hasCurrentContext;
+            }
+
+            [SetUp]
+            public void SetUp()
+            {
+                _fixture = new CustomAutoFixture();
+
+                _expectedContextManageCount = _hasCurrentContext ? 0 : 1;
+
+                _contextService = _fixture.Freeze<IContextService<DbContext_Fake>>();
+                _dbSetService = _fixture.Freeze<IDbSetService<DbContext_Fake, Foo>>();
+
+                _context = new DbContext_Fake();
+
+                _contextService.HasCurrentContext().Returns(_hasCurrentContext);
+                _contextService.InitContext().Returns(_context);
+                _contextService.GetCurrentContext().Returns(_context);
+
+                _dbSet = Substitute.For<DbSet<Foo>, IQueryable<Foo>>();
+
+                _dbSetService.GetDbSet(Arg.Any<DbContext_Fake>())
+                    .Returns(_dbSet);
+
+                _foos = _fixture.CreateMany<Foo>();
+
+                _query = _fixture.Create<IQuery<Foo>>();
+                _query.Query(Arg.Any<IQueryable<Foo>>())
+                    .Returns(_foos.AsQueryable());
+
+                _sut = _fixture.Create<ContextRepository<DbContext_Fake, Foo>>();
+            }
+
+            [Test]
+            public void Then_expected_methods_are_called_the_correct_times()
+            {
+                _sut.Any(_query);
+
+                Assert.Multiple(() =>
+                {
+                    _contextService.Received(_expectedContextManageCount).InitContext();
+                    _contextService.Received(_expectedContextManageCount).ClearCurrentContext();
+                });
+            }
+
+            [Test]
+            public void Then_the_expected_result_is_returned()
+            {
+                var result = _sut.Any(_query);
+
+                Assert.That(result, Is.EqualTo(true));
             }
         }
 

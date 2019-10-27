@@ -161,6 +161,26 @@ namespace Ternacode.Persistence.EntityFrameworkCore.Repositories
             }
         }
 
+        public bool Any(IQuery<TEntity> query)
+        {
+            if (query == null)
+                throw new ArgumentNullException(nameof(query));
+
+            var (context, hasOwnContext) = GetCurrentContext();
+            try
+            {
+                var queryable = _dbSetService.GetDbSet(context)
+                    .AsQueryable();
+
+                return query.Query(queryable)
+                    .Any();
+            }
+            finally
+            {
+                ClearOwnContext(hasOwnContext);
+            }
+        }
+
         private (TContext, bool) GetCurrentContext()
         {
             var hasOwnContext = false;
