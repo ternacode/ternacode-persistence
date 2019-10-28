@@ -141,6 +141,48 @@ namespace Ternacode.Persistence.EntityFrameworkCore.ComponentTest.Repository
         }
 
         [Test]
+        public async Task When_querying_for_any_entity_Then_the_expected_result_is_returned()
+        {
+            const string bar1Name = "bar 1";
+            const string bar2Name = "bar 2";
+
+            var foo1 = FooFactory.Create("foo 1", bar1Name);
+            var foo2 = FooFactory.Create("foo 2", bar2Name);
+
+            await _fooRepository.AddAsync(foo1);
+            _fooRepository.Add(foo2);
+
+            var bars = _barRepository.Query(new GetAllBarsQuery());
+            var bar1 = bars.Single(b => b.Name == bar1Name);
+            var bar2 = bars.Single(b => b.Name == bar2Name);
+
+            var anyAllFoos = _fooRepository.Any(new GetAllFoosQuery());
+            var anyAllBars = _barRepository.Any(new GetAllBarsQuery());
+            
+            var anyWithFoo1Id = _fooRepository.Any(new GetFooWithIdQuery(foo1.FooId));
+            var anyWithFoo2Id = _fooRepository.Any(new GetFooWithIdQuery(foo2.FooId));
+            var anyWithInvalidFooId = _fooRepository.Any(new GetFooWithIdQuery(long.MaxValue));
+
+            var anyWithBar1Id = _barRepository.Any(new GetBarWithIdQuery(bar1.BarId));
+            var anyWithBar2Id = _barRepository.Any(new GetBarWithIdQuery(bar2.BarId));
+            var anyWithInvalidBarId = _barRepository.Any(new GetBarWithIdQuery(Guid.Empty));
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(anyAllFoos);
+                Assert.That(anyAllBars);
+
+                Assert.That(anyWithFoo1Id);
+                Assert.That(anyWithFoo2Id);
+                Assert.That(anyWithInvalidFooId, Is.False);
+
+                Assert.That(anyWithBar1Id);
+                Assert.That(anyWithBar2Id);
+                Assert.That(anyWithInvalidBarId, Is.False);
+            });
+        }
+
+        [Test]
         public async Task When_adding_entities_with_the_same_reference_entity_Then_it_gets_added_correctly()
         {
             var foo1 = FooFactory.Create(fooName: "foo 1", barName: "bar shared");
