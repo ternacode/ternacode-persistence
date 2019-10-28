@@ -209,11 +209,9 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitTest.Repositories
             private IContextService<DbContext_Fake> _contextService;
             private IDbSetService<DbContext_Fake, Foo> _dbSetService;
 
-            private Foo _foo;
+            private Foo _expectedEntity;
             private DbContext_Fake _context;
             private DbSet<Foo> _dbSet;
-
-            private Foo _result;
 
             public When_getting_an_entity(bool hasCurrentContext)
             {
@@ -236,10 +234,10 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitTest.Repositories
                 _contextService.InitContext().Returns(_context);
                 _contextService.GetCurrentContext().Returns(_context);
 
-                _foo = _fixture.Create<Foo>();
+                _expectedEntity = _fixture.Create<Foo>();
 
-                _dbSet = CreateDbSetSubstitute(_foo);
-                _dbSet.Find(_foo.FooId).Returns(_foo);
+                _dbSet = CreateDbSetSubstitute(_expectedEntity);
+                _dbSet.Find(_expectedEntity.FooId).Returns(_expectedEntity);
 
                 _dbSetService.GetDbSet(Arg.Any<DbContext_Fake>())
                     .Returns(_dbSet);
@@ -250,15 +248,22 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitTest.Repositories
             [Test]
             public void Then_expected_methods_are_called_the_correct_times()
             {
-                _result = _sut.Get(_foo.FooId);
+                _sut.Get(_expectedEntity.FooId);
 
                 Assert.Multiple(() =>
                 {
                     _contextService.Received(_expectedContextManageCount).InitContext();
                     _contextService.Received(_expectedContextManageCount).ClearCurrentContext();
-                    _dbSet.Received(1).Find(_foo.FooId);
-                    Assert.That(_result, Is.EqualTo(_foo), "Invalid entity returned");
+                    _dbSet.Received(1).Find(_expectedEntity.FooId);
                 });
+            }
+
+            [Test]
+            public void Then_the_expected_entity_is_returned()
+            {
+                var result = _sut.Get(_expectedEntity.FooId);
+
+                Assert.That(result, Is.EqualTo(_expectedEntity), "Invalid entity");
             }
         }
 
@@ -451,14 +456,21 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitTest.Repositories
             [Test]
             public void Then_expected_methods_are_called_the_correct_times()
             {
-                var result = _sut.Count(_query);
+                _sut.Count(_query);
 
                 Assert.Multiple(() =>
                 {
                     _contextService.Received(_expectedContextManageCount).InitContext();
                     _contextService.Received(_expectedContextManageCount).ClearCurrentContext();
-                    Assert.That(result, Is.EqualTo(_foos.Count()), "Invalid result count");
                 });
+            }
+
+            [Test]
+            public void Then_the_expected_count_is_returned()
+            {
+                var result = _sut.Count(_query);
+
+                Assert.That(result, Is.EqualTo(_foos.Count()), "Invalid result count");
             }
         }
 
@@ -556,8 +568,6 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitTest.Repositories
             private IEnumerable<Foo> _foos;
             private IQuery<Foo> _query;
 
-            private IEnumerable<Foo> _result;
-
             public When_querying_entities(bool hasCurrentContext)
             {
                 _hasCurrentContext = hasCurrentContext;
@@ -596,15 +606,22 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitTest.Repositories
             [Test]
             public void Then_expected_methods_are_called_the_correct_times()
             {
-                _result = _sut.Query(_query);
+                _sut.Query(_query);
 
                 Assert.Multiple(() =>
                 {
                     _contextService.Received(_expectedContextManageCount).InitContext();
                     _contextService.Received(_expectedContextManageCount).ClearCurrentContext();
                     _query.Received(1).GetLoadedProperties();
-                    Assert.That(_result, Is.EqualTo(_foos), "Invalid result");
                 });
+            }
+
+            [Test]
+            public void Then_the_expected_result_is_returned()
+            {
+                var result = _sut.Query(_query);
+
+                Assert.That(result, Is.EqualTo(_foos), "Invalid result");
             }
         }
 
