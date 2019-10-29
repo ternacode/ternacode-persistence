@@ -28,7 +28,7 @@ namespace Ternacode.Persistence.Example.Domain.Processes.Users
 
             return await _unitOfWork.RunAsync(async () =>
             {
-                if (_userRepository.Count(new GetUserWithNameQuery(name)) != 0)
+                if (_userRepository.Any(new GetUserWithNameQuery(name)))
                 {
                     throw new ArgumentException($"A user with name '{name}' already exists.");
                 }

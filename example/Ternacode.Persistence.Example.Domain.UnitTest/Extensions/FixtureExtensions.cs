@@ -59,6 +59,11 @@ namespace Ternacode.Persistence.Example.Domain.UnitTest.Extensions
                 .Returns(c => c.Arg<IQuery<T>>()
                     .Query(entityCollection.OfType<T>().AsQueryable())
                     .Count());
+
+            repo.Any(Arg.Any<IQuery<T>>())
+                .Returns(c => c.Arg<IQuery<T>>()
+                    .Query(entityCollection.OfType<T>().AsQueryable())
+                    .Any());
         }
 
         private static object GetEntityId<T>(T entity)
