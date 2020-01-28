@@ -43,6 +43,11 @@ namespace Ternacode.Persistence.Abstractions
         /// </summary>
         IEnumerable<TEntity> Query(IQuery<TEntity> query);
 
+        /// <summary>
+        /// Queries the database with provided IQuery object, returning all matches.
+        /// If no matches, an empty enumerable is returned.
+        /// </summary>
+        Task<IEnumerable<TEntity>> QueryAsync(IQuery<TEntity> query);
 
         /// <summary>
         /// Gets the database entity count using the query of provided query.
