@@ -22,6 +22,12 @@ namespace Ternacode.Persistence.Abstractions
         TEntity Get(object id);
 
         /// <summary>
+        /// Returns a single entity, querying by provided id object.
+        /// If no entity is found, null is returned.
+        /// </summary>
+        Task<TEntity> GetAsync(object id);
+
+        /// <summary>
         /// Updates an entity and returns an updated object.
         /// </summary>
         TEntity Update(TEntity entity);
