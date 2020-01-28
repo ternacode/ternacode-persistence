@@ -232,6 +232,29 @@ namespace Ternacode.Persistence.EntityFrameworkCore.ComponentTest.Repository
         }
 
         [Test]
+        public async Task When_getting_entities_by_id_async_Then_the_correct_items_are_returned()
+        {
+            var foo1 = FooFactory.Create("foo 1", "bar 1");
+            var foo2 = FooFactory.Create("foo 2", "bar 2");
+
+            await _fooRepository.AddAsync(foo1);
+            await _fooRepository.AddAsync(foo2);
+
+            var getFoo1 = await _fooRepository.GetAsync(foo1.FooId);
+            var getBar1 = await _barRepository.GetAsync(foo1.Bar.BarId);
+            var getFoo2 = await _fooRepository.GetAsync(foo2.FooId);
+            var getBar2 = await _barRepository.GetAsync(foo2.Bar.BarId);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(getFoo1?.Name, Is.EqualTo(foo1.Name), "Invalid Foo 1 name");
+                Assert.That(getBar1?.Name, Is.EqualTo(foo1.Bar.Name), "Invalid Bar 1 name");
+                Assert.That(getFoo2?.Name, Is.EqualTo(foo2.Name), "Invalid Foo 2 name");
+                Assert.That(getBar2?.Name, Is.EqualTo(foo2.Bar.Name), "Invalid Bar 2 name");
+            });
+        }
+
+        [Test]
         public async Task When_querying_with_loading_Then_the_correct_items_are_returned()
         {
             var foo = FooFactory.Create();
@@ -253,7 +276,7 @@ namespace Ternacode.Persistence.EntityFrameworkCore.ComponentTest.Repository
         }
 
         [Test]
-        public async Task When_calling_both_Get_and_query_Then_the_the_same_items_are_returned()
+        public async Task When_calling_both_Get_and_Query_Then_the_the_same_items_are_returned()
         {
             var foo = FooFactory.Create();
 
@@ -261,6 +284,29 @@ namespace Ternacode.Persistence.EntityFrameworkCore.ComponentTest.Repository
 
             var getFoo = _fooRepository.Get(foo.FooId);
             var getBar = _barRepository.Get(foo.Bar.BarId);
+            var queryFoo = _fooRepository.Query(new GetAllFoosQuery()).FirstOrDefault();
+            var queryBar = _barRepository.Query(new GetWithoutLoadingQuery<Bar>()).FirstOrDefault();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(queryFoo?.Name, Is.EqualTo(getFoo?.Name), "Invalid Foo query name");
+                Assert.That(queryBar?.Name, Is.EqualTo(getBar?.Name), "Invalid Bar query name");
+                Assert.That(queryFoo?.FooId, Is.EqualTo(getFoo?.FooId), "Invalid Foo query FooId");
+                Assert.That(queryBar?.BarId, Is.EqualTo(getBar?.BarId), "Invalid Bar query BarId");
+                Assert.That(queryFoo?.Bar?.Name, Is.EqualTo(getBar?.Name), "Invalid Foo query Bar name");
+                Assert.That(queryFoo?.Bar?.BarId, Is.EqualTo(getBar?.BarId), "Invalid Foo query BarId");
+            });
+        }
+
+        [Test]
+        public async Task When_calling_both_GetAsync_and_Query_Then_the_the_same_items_are_returned()
+        {
+            var foo = FooFactory.Create();
+
+            await _fooRepository.AddAsync(foo);
+
+            var getFoo = await _fooRepository.GetAsync(foo.FooId);
+            var getBar = await _barRepository.GetAsync(foo.Bar.BarId);
             var queryFoo = _fooRepository.Query(new GetAllFoosQuery()).FirstOrDefault();
             var queryBar = _barRepository.Query(new GetWithoutLoadingQuery<Bar>()).FirstOrDefault();
 

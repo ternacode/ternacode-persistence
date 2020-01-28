@@ -78,6 +78,20 @@ namespace Ternacode.Persistence.EntityFrameworkCore.Repositories
             }
         }
 
+        public async Task<TEntity> GetAsync(object id)
+        {
+            var (context, hasOwnContext) = GetCurrentContext();
+            try
+            {
+                return await _dbSetService.GetDbSet(context)
+                    .FindAsync(id);
+            }
+            finally
+            {
+                ClearOwnContext(hasOwnContext);
+            }
+        }
+
         public TEntity Update(TEntity entity)
         {
             if (entity == null)

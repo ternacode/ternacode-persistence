@@ -269,6 +269,78 @@ namespace Ternacode.Persistence.EntityFrameworkCore.UnitTest.Repositories
 
         [TestFixture(false)]
         [TestFixture(true)]
+        public class When_getting_an_entity_async
+        {
+            private CustomAutoFixture _fixture;
+
+            private readonly bool _hasCurrentContext;
+            private int _expectedContextManageCount;
+
+            private ContextRepository<DbContext_Fake, Foo> _sut;
+
+            private IContextService<DbContext_Fake> _contextService;
+            private IDbSetService<DbContext_Fake, Foo> _dbSetService;
+
+            private Foo _expectedEntity;
+            private DbContext_Fake _context;
+            private DbSet<Foo> _dbSet;
+
+            public When_getting_an_entity_async(bool hasCurrentContext)
+            {
+                _hasCurrentContext = hasCurrentContext;
+            }
+
+            [SetUp]
+            public void SetUp()
+            {
+                _fixture = new CustomAutoFixture();
+
+                _expectedContextManageCount = _hasCurrentContext ? 0 : 1;
+
+                _contextService = _fixture.Freeze<IContextService<DbContext_Fake>>();
+                _dbSetService = _fixture.Freeze<IDbSetService<DbContext_Fake, Foo>>();
+
+                _context = new DbContext_Fake();
+
+                _contextService.HasCurrentContext().Returns(_hasCurrentContext);
+                _contextService.InitContext().Returns(_context);
+                _contextService.GetCurrentContext().Returns(_context);
+
+                _expectedEntity = _fixture.Create<Foo>();
+
+                _dbSet = CreateDbSetSubstitute(_expectedEntity);
+                _dbSet.FindAsync(_expectedEntity.FooId).Returns(_expectedEntity);
+
+                _dbSetService.GetDbSet(Arg.Any<DbContext_Fake>())
+                    .Returns(_dbSet);
+
+                _sut = _fixture.Create<ContextRepository<DbContext_Fake, Foo>>();
+            }
+
+            [Test]
+            public void Then_expected_methods_are_called_the_correct_times()
+            {
+                _sut.GetAsync(_expectedEntity.FooId).Wait();
+
+                Assert.Multiple(() =>
+                {
+                    _contextService.Received(_expectedContextManageCount).InitContext();
+                    _contextService.Received(_expectedContextManageCount).ClearCurrentContext();
+                    _dbSet.Received(1).FindAsync(_expectedEntity.FooId);
+                });
+            }
+
+            [Test]
+            public void Then_the_expected_entity_is_returned()
+            {
+                var result = _sut.GetAsync(_expectedEntity.FooId).Result;
+
+                Assert.That(result, Is.EqualTo(_expectedEntity), "Invalid entity");
+            }
+        }
+
+        [TestFixture(false)]
+        [TestFixture(true)]
         public class When_updating_an_entity
         {
             private CustomAutoFixture _fixture;
