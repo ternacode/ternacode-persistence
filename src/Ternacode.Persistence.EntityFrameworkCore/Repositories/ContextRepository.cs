@@ -27,23 +27,7 @@ namespace Ternacode.Persistence.EntityFrameworkCore.Repositories
         }
 
         public void Add(TEntity entity)
-        {
-            if (entity == null)
-                throw new ArgumentNullException(nameof(entity));
-
-            var (context, hasOwnContext) = GetCurrentContext();
-            try
-            {
-                _dbSetService.GetDbSet(context)
-                    .Add(entity);
-
-                _flushService.FlushChanges(context);
-            }
-            finally
-            {
-                ClearOwnContext(hasOwnContext);
-            }
-        }
+            => AddAsync(entity).GetAwaiter().GetResult();
 
         public async Task AddAsync(TEntity entity)
         {
@@ -65,18 +49,7 @@ namespace Ternacode.Persistence.EntityFrameworkCore.Repositories
         }
 
         public TEntity Get(object id)
-        {
-            var (context, hasOwnContext) = GetCurrentContext();
-            try
-            {
-                return _dbSetService.GetDbSet(context)
-                    .Find(id);
-            }
-            finally
-            {
-                ClearOwnContext(hasOwnContext);
-            }
-        }
+            => GetAsync(id).GetAwaiter().GetResult();
 
         public async Task<TEntity> GetAsync(object id)
         {
@@ -133,6 +106,9 @@ namespace Ternacode.Persistence.EntityFrameworkCore.Repositories
         }
 
         public IEnumerable<TEntity> Query(IQuery<TEntity> query)
+            => QueryAsync(query).GetAwaiter().GetResult();
+
+        public async Task<IEnumerable<TEntity>> QueryAsync(IQuery<TEntity> query)
         {
             if (query == null)
                 throw new ArgumentNullException(nameof(query));
@@ -147,7 +123,7 @@ namespace Ternacode.Persistence.EntityFrameworkCore.Repositories
                 queryResult = query.GetLoadedProperties()
                     .Aggregate(queryResult, (current, property) => current.Include(property));
 
-                return queryResult.ToList();
+                return await queryResult.ToListAsync();
             }
             finally
             {
