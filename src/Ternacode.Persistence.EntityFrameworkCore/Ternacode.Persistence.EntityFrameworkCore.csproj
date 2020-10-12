@@ -10,6 +10,7 @@
     <PackageTags>EntityFrameworkCore, Entity Framework, Core, UnitOfWork, Repository, Testing</PackageTags>
     <Description>Implementations of Ternacode.Persistence.Abstractions for EntityFramework Core.</Description>
     <RepositoryUrl>https://github.com/ternacode/ternacode-persistence</RepositoryUrl>
+    <Copyright>Ternacode</Copyright>
   </PropertyGroup>
 
   <ItemGroup>

@@ -3,8 +3,8 @@ image: Visual Studio 2019
 build_script:
 - cmd: >-
     dotnet pack -c Release .\src\Ternacode.Persistence.Abstractions
-
     dotnet pack -c Release .\src\Ternacode.Persistence.EntityFrameworkCore
+    dotnet pack -c Release .\src\Ternacode.Persistence.Extensions
 test_script:
 - cmd: dotnet test .\test\Ternacode.Persistence.EntityFrameworkCore.UnitTest
 artifacts:
@@ -12,6 +12,8 @@ artifacts:
   name: Abstractions nupkg
 - path: src\Ternacode.Persistence.EntityFrameworkCore\bin\Release\Ternacode.Persistence.EntityFrameworkCore.*.nupkg
   name: EntityFrameworkCore nupkg
+- path: src\Ternacode.Persistence.Extensions\bin\Release\Ternacode.Persistence.Extensions.*.nupkg
+  name: Extensions nupkg
 deploy:
 - provider: NuGet
   api_key:
