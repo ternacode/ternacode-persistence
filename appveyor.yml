@@ -3,7 +3,9 @@ image: Visual Studio 2019
 build_script:
 - cmd: >-
     dotnet pack -c Release .\src\Ternacode.Persistence.Abstractions
+    
     dotnet pack -c Release .\src\Ternacode.Persistence.EntityFrameworkCore
+    
     dotnet pack -c Release .\src\Ternacode.Persistence.Extensions
 test_script:
 - cmd: dotnet test .\test\Ternacode.Persistence.EntityFrameworkCore.UnitTest
