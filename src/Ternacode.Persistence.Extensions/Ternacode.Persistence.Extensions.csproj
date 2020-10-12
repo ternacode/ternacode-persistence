@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Authors>Kristoffer Karlsson</Authors>
+    <Company>Ternacode</Company>
+    <Product>Ternacode.Persistence</Product>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>UnitOfWork, Repository, Testing</PackageTags>
+    <Version>0.6.0</Version>
+    <Description>Utility extensions for Ternacode.Persistence.Abstractions.</Description>
+    <RepositoryUrl>https://github.com/ternacode/ternacode-persistence</RepositoryUrl>
+    <Copyright>Ternacode</Copyright>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Ternacode.Persistence.Abstractions" Version="0.6.0" />
+  </ItemGroup>
+
+</Project>
