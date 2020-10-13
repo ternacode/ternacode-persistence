@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Ternacode.Persistence.EntityFrameworkCore\Ternacode.Persistence.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Ternacode.Persistence.Extensions\Ternacode.Persistence.Extensions.csproj" />
   </ItemGroup>
 
 </Project>
