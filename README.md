@@ -6,6 +6,7 @@ Package                                     | Stable
 --------------------------------------------|-------------
 `Ternacode.Persistence.Abstractions`        | [![NuGet](https://img.shields.io/nuget/v/Ternacode.Persistence.Abstractions?style=flat-square)](https://www.nuget.org/packages/Ternacode.Persistence.Abstractions/)
 `Ternacode.Persistence.EntityFrameworkCore` | [![NuGet](https://img.shields.io/nuget/v/Ternacode.Persistence.EntityFrameworkCore?style=flat-square)](https://www.nuget.org/packages/Ternacode.Persistence.EntityFrameworkCore/)
+`Ternacode.Persistence.Extensions`          | [![NuGet](https://img.shields.io/nuget/v/Ternacode.Persistence.Extensions?style=flat-square)](https://www.nuget.org/packages/Ternacode.Persistence.Extensions/)
 
 ## Usage
 The quickest way to get started is to look at the example project, containing a sample of how this library is used. In particular, the example contains a small ASP .NET Core API: ```Ternacode.Persistence.Example.API```. In ```Startup.ConfigureServices```, extension methods provided by the library are used to inject everything needed:
